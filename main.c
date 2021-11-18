@@ -13,13 +13,18 @@
 
 int main() {
 	char line[1000];
+	char **parsed;
 
 	while(1) {
-		// gather input
+		// gather input -- after user presses newline, string goes into line
+		input(line);
 
-		// if "cd"
+		// split input -- take line and create string array, splitting by space
+		parsed = split(line);
 
-		// if "exit"
+		// if "cd" -- chdir
+
+		// if "exit" -- break out of loop
 
 		// everything else??
 
