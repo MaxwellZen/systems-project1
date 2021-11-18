@@ -12,6 +12,7 @@
 #include "methods.h"
 
 int main() {
+	char line[1000];
 
 	while(1) {
 		// gather input
@@ -21,7 +22,7 @@ int main() {
 		// if "exit"
 
 		// everything else??
-		
+
 	}
 
 	return 0;
