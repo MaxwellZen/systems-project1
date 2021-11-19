@@ -27,6 +27,18 @@ int main() {
 		// if "exit" -- break out of loop
 
 		// everything else??
+		else {
+			int f = fork();
+			if (!f) {
+				if (execvp(parsed[0], parsed) == -1) {
+					printf("ERROR : %s\n", strerror(errno));
+				}
+				return 0;
+			} else {
+				int status;
+				waitpid(f, &status, 0);
+			}
+		}
 
 	}
 
