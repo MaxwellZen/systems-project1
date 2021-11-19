@@ -21,16 +21,26 @@ int main() {
 
 		// split input -- take line and create string array, splitting by space
        		parsed = split(line);
+		int parsed_len = 0;
+		int i = 0;
+		while(parsed[i]){
+		  parsed_len++;
+		  i++;
+		}
+		  
 		
 		if(!strcmp(parsed[0], "exit")){
 		  break;
 		}
 
 		else if(!strcmp(parsed[0], "cd")){
-		  int n = chdir(parsed[1]);
-		  if(n)
-		    printf("cd failed: %s", strerror(errno));
-		    
+		  if(parsed_len != 2)
+		    printf("Please follow the format: cd <path>");
+		  else{
+		    int n = chdir(parsed[1]);
+		    if(n)
+		      printf("cd failed: %s", strerror(errno));
+		  }
 		}
 
 		// everything else??
