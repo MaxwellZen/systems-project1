@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <fnctl.h>
+#include <fcntl.h>
 #include <unistd.h>
 #include <sys/wait.h>
 #include <time.h>
@@ -20,11 +20,18 @@ int main() {
 		input(line);
 
 		// split input -- take line and create string array, splitting by space
-		parsed = split(line);
+       		parsed = split(line);
+		
+		if(!strcmp(parsed[0], "exit")){
+		  break;
+		}
 
-		// if "cd" -- chdir
-
-		// if "exit" -- break out of loop
+		else if(!strcmp(parsed[0], "cd")){
+		  int n = chdir(parsed[1]);
+		  if(n)
+		    printf("cd failed: %s", strerror(errno));
+		    
+		}
 
 		// everything else??
 		else {
