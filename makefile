@@ -1,5 +1,5 @@
 all: main.o methods.h methods.o
-	gcc -o main main.o
+	gcc -o main main.o methods.o
 
 run:
 	./main
