@@ -20,7 +20,6 @@ void input(char * c) {
 
 // takes string, returns parsed input
 char** split(char * c) {
-  printf("%s\n", c);
   int i = 0;
   int size = 1;
 
