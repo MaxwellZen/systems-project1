@@ -13,8 +13,9 @@
 
 // takes string, reads input into the string
 void input(char * c) {
-  char **args = split(c);
-
+	fgets(c, 1000, stdin);
+	int n = strlen(c);
+	if (c[n-1]=='\n') c[n-1]=0;
 }
 
 // takes string, returns parsed input
