@@ -64,13 +64,44 @@ void eval(char **parsed) {
 
 	// redirection
 	// >
-	else if () {}
+	else if (parsed_len>1 && strcmp(parsed[parsed_len-2], ">")==0) {
+		int fd = open(parsed[parsed_len-1], O_WRONLY | O_TRUNC | O_CREAT, 0777);
+		if (fd==-1) {
+			printf("Error: file opening failed\n");
+			return;
+		}
+		int stdoutcopy = dup(STDOUT_FILENO);
+		dup2(fd, STDOUT_FILENO);
+		parsed[parsed_len-2]=0;
+		eval(parsed);
+		dup2(stdoutcopy, STDOUT_FILENO);
+	}
 	// >>
-	else if () {}
+	else if (parsed_len>1 && strcmp(parsed[parsed_len-2], ">>")==0) {
+		int fd = open(parsed[parsed_len-1], O_WRONLY | O_APPEND | O_CREAT, 0777);
+		if (fd==-1) {
+			printf("Error: file opening failed\n");
+			return;
+		}
+		int stdoutcopy = dup(STDOUT_FILENO);
+		dup2(fd, STDOUT_FILENO);
+		parsed[parsed_len-2]=0;
+		eval(parsed);
+		dup2(stdoutcopy, STDOUT_FILENO);
+	}
 	// <
-	else if () {}
-	// <<
-	else if () {}
+	else if (parsed_len>1 && strcmp(parsed[parsed_len-2], "<")==0) {
+		int fd = open(parsed[parsed_len-1], O_RDONLY, 0777);
+		if (fd==-1) {
+			printf("Error: file opening failed\n");
+			return;
+		}
+		int stdincopy = dup(STDIN_FILENO);
+		dup2(fd, STDIN_FILENO);
+		parsed[parsed_len-2]=0;
+		eval(parsed);
+		dup2(stdincopy, STDIN_FILENO);
+	}
 
 	// everything else??
 	else {
