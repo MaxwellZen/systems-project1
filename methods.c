@@ -54,16 +54,31 @@ void eval(char **parsed) {
 	// cd -- call chdir
 	else if(!strcmp(parsed[0], "cd")){
 	  if(parsed_len != 2)
-		printf("Please follow the format: cd <path>");
+		printf("Please follow the format: cd <path>\n");
 	  else{
 		int n = chdir(parsed[1]);
 		if(n)
-		  printf("cd failed: %s", strerror(errno));
+		  printf("cd failed: %s\n", strerror(errno));
 	  }
 	}
 
+	// redirection
+	// >
+	else if () {}
+	// >>
+	else if () {}
+	// <
+	else if () {}
+	// <<
+	else if () {}
+
 	// everything else??
 	else {
+		// search for a pipe
+		int haspipe = 0;
+		// account for piping
+		if (haspipe) {}
+
 		int f = fork();
 		if (!f) {
 			if (execvp(parsed[0], parsed) == -1) {
