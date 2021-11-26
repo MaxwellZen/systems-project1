@@ -22,9 +22,23 @@ void input(char * c) {
 char** split(char * c) {
   int i = 0;
   int size = 1;
+	char * d;
+	int count = 0;
 
   while (c[i] != '\0') {
     if (c[i] == ' ') size += 1;
+		else if (c[i] == ';') size += 2;
+
+		if (c[i] == ';') {
+			d[count] = ' ';
+			d[count + 1] = ';';
+			d[count + 2] = ' ';
+			count += 3;
+		}
+		else {
+			d[count] = c[i];
+			count += 1;
+		}
     i += 1;
   }
 
