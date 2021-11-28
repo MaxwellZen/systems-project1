@@ -12,52 +12,74 @@
 #include "methods.h"
 
 // takes string, returns parsed input
+// char** split(char * c) {
+//   int i = 0;
+//   int size = 1;
+// 	char * d;
+// 	int count = 0;
+
+//   while (c[i] != '\0') {
+//     if (c[i] == ' ') size += 1;
+// 		else if (c[i] == ';') size += 2;
+
+// 		if (c[i] == ';') {
+// 			d[count] = ' ';
+// 			d[count + 1] = ';';
+// 			d[count + 2] = ' ';
+// 			count += 3;
+// 		}
+// 		else {
+// 			d[count] = c[i];
+// 			count += 1;
+// 		}
+//     i += 1;
+//   }
+
+//   char ** args = calloc(size, sizeof(char *));
+//   for (int i = 0; i < size; i ++) {
+//     args[i] = strsep(&d, " ");
+//   }
+//   return args;
+// }
+
 char** split(char * c) {
   int i = 0;
   int size = 1;
-	char * d;
-	int count = 0;
 
   while (c[i] != '\0') {
     if (c[i] == ' ') size += 1;
-		else if (c[i] == ';') size += 2;
-
-		if (c[i] == ';') {
-			d[count] = ' ';
-			d[count + 1] = ';';
-			d[count + 2] = ' ';
-			count += 3;
-		}
-		else {
-			d[count] = c[i];
-			count += 1;
-		}
     i += 1;
   }
 
   char ** args = calloc(size, sizeof(char *));
   for (int i = 0; i < size; i ++) {
-    args[i] = strsep(&d, " ");
+    args[i] = strsep(&c, " ");
+    // printf("%s\n", args[i]);
   }
   return args;
 }
 
-// char** split(char * c) {
-//   int i = 0;
-//   int size = 1;
-//
-//   while (c[i] != '\0') {
-//     if (c[i] == ' ') size += 1;
-//     i += 1;
-//   }
-//
-//   char ** args = calloc(size, sizeof(char *));
-//   for (int i = 0; i < size; i ++) {
-//     args[i] = strsep(&c, " ");
-//     // printf("%s\n", args[i]);
-//   }
-//   return args;
-// }
+int piping(char *cmd1, char **cmds) {
+    char buff[100];
+
+	FILE *in = popen(cmd1, "r");
+	fgets(buff, sizeof(buff), in);
+	FILE *out = popen(cmds[0], "w");
+	fputs(buff, out);
+	read(out, buff, sizeof(out));
+	cmds = cmds[1];
+	while(cmds[0]){
+		FILE *out = popen(cmds[0], "w");
+		fputs(buff, out);
+		read(out, buff, sizeof(out));
+		cmds = cmds[1];
+	}
+
+    pclose(in);
+    pclose(out);
+	return 0;
+}
+
 
 // takes arguments, executes commands
 void eval(char **parsed) {
@@ -67,6 +89,7 @@ void eval(char **parsed) {
 	while(parsed[parsed_len]){
 	  parsed_len++;
 	}
+	printf("%d", parsed_len);
 	if (parsed_len == 0) return;
 
 	// exit -- exit program
@@ -126,13 +149,27 @@ void eval(char **parsed) {
 		dup2(stdincopy, STDIN_FILENO);
 	}
 
+	// piping, only works with piping
+	else if(parsed_len > 2 && !strcmp(parsed[1], "|")){
+		printf("test\n");
+		char **args = calloc(1, sizeof(parsed)/2);
+		int i;
+		for(i=1; i<parsed_len; i++){
+			if(i%2){
+				args[i/2] = parsed[i];
+			}
+			else{
+				if(strcmp(parsed[i], "|")){
+					printf("Invalid piping syntax");
+					break;
+				}
+			}
+		}
+		piping(parsed[0], args);
+	}
+
 	// everything else??
 	else {
-		// search for a pipe
-		int haspipe = 0;
-		// account for piping
-		if (haspipe) {}
-
 		int f = fork();
 		if (!f) {
 			if (execvp(parsed[0], parsed) == -1) {
