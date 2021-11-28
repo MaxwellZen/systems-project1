@@ -12,6 +12,15 @@
 #include <limits.h>
 #include "methods.h"
 
+int enter_shell() {
+  char s[] = {0xF0, 0x9F, 0x90, 0xA2, '\0'};
+
+  boldgreen();
+  printf("%s %s %s...Entering TURTLE SHELL... %s %s %s \n\n\n", s, s, s, s, s, s);
+  return 0;
+  white();
+}
+
 void get_commandline() {
   int i = 0;
   char hostbuffer[256];
@@ -208,4 +217,12 @@ void eval(char **parsed) {
 			waitpid(f, &status, 0);
 		}
 	}
+}
+
+void boldgreen() {
+  printf("\033[1;32m");
+}
+
+void white() {
+  printf("\033[0m");
 }

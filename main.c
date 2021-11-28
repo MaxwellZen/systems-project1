@@ -12,21 +12,23 @@
 #include <limits.h>
 #include "methods.h"
 
-
 int main() {
 	char line[1000];
 	char **parsed;
 	int i = 0;
 	char c;
+	
+	enter_shell();
+	white();
+
 	get_commandline();
-	// printf("Enter command: ");
 	fflush(stdout);
 
 	while(1) {
 		c = getchar();
 		if (c=='\n') {
 			// split input -- take line and create string array, splitting by space
-	       	parsed = split(line);
+	    parsed = split(line);
 
 			char **cur, **prev;
 			for (cur = prev = parsed; *cur; cur++) {
@@ -37,7 +39,6 @@ int main() {
 				}
 			}
 			eval(prev);
-			// printf("Enter command: ");
 			get_commandline();
 			fflush(stdout);
 			i = 0;
