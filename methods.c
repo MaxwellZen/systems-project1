@@ -40,12 +40,12 @@ void get_commandline() {
     }
     strcpy(dir, hold);
 
-    boldgreen();
+    green();
     printf("%s %s:%s %s$ ", s, strsep(&host, "."), dir, name);
     white();
   }
   else {
-    boldgreen();
+    green();
     printf("Enter command: ");
     white();
   }
@@ -227,6 +227,10 @@ void eval(char **parsed) {
 
 void boldgreen() {
   printf("\033[1;32m");
+}
+
+void green() {
+  printf("\033[0;32m");
 }
 
 void white() {

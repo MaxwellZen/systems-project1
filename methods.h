@@ -15,4 +15,5 @@ void eval(char **parsed);
 
 // terminal colors
 void boldgreen();
+void green();
 void white();
