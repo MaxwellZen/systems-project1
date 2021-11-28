@@ -66,13 +66,15 @@ int piping(char *cmd1, char **cmds) {
 	fgets(buff, sizeof(buff), in);
 	FILE *out = popen(cmds[0], "w");
 	fputs(buff, out);
-	read(out, buff, sizeof(out));
-	cmds = cmds[1];
+	int fd = fileno(out);
+	read(fd, buff, sizeof(out));
+	cmds = cmds+1;
 	while(cmds[0]){
 		FILE *out = popen(cmds[0], "w");
 		fputs(buff, out);
-		read(out, buff, sizeof(out));
-		cmds = cmds[1];
+		int fd = fileno(out);
+		read(fd, buff, sizeof(out));
+		cmds = cmds+1;
 	}
 
     pclose(in);
