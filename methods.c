@@ -85,7 +85,7 @@ char** split(char * c) {
     i += 1;
   }
 
-  char ** args = calloc(size, sizeof(char *));
+  char ** args = calloc(size+1, sizeof(char *));
   for (int i = 0; i < size; i ++) {
     args[i] = strsep(&c, " ");
     // printf("%s\n", args[i]);
@@ -94,22 +94,22 @@ char** split(char * c) {
 }
 
 int piping(char *cmd1, char **cmds) {
+	FILE *in;
+	FILE *out;
     char buff[100];
-
-	FILE *in = popen(cmd1, "r");
-	fgets(buff, sizeof(buff), in);
-	FILE *out = popen(cmds[0], "w");
-	fputs(buff, out);
-	int fd = fileno(out);
-	read(fd, buff, sizeof(out));
-	cmds = cmds+1;
-	while(cmds[0]){
-		FILE *out = popen(cmds[0], "w");
+	in = popen(cmd1, "r");
+	out = popen(cmds[0], "w");
+	while(fgets(buff, sizeof(buff), in)){
 		fputs(buff, out);
-		int fd = fileno(out);
-		read(fd, buff, sizeof(out));
-		cmds = cmds+1;
 	}
+	cmds = cmds+1;
+	// while(cmds[0]){
+	// 	out = popen(cmds[0], "w");
+	// 	while(fgets(buff, sizeof(buff), in)){
+	// 		fputs(buff, out);
+	// 	}
+	// 	cmds = cmds+1;
+	// }
 
     pclose(in);
     pclose(out);
@@ -125,7 +125,6 @@ void eval(char **parsed) {
 	while(parsed[parsed_len]){
 	  parsed_len++;
 	}
-	printf("%d", parsed_len);
 	if (parsed_len == 0) return;
 
 	// exit -- exit program
@@ -187,11 +186,10 @@ void eval(char **parsed) {
 
 	// piping, only works with piping
 	else if(parsed_len > 2 && !strcmp(parsed[1], "|")){
-		printf("test\n");
-		char **args = calloc(1, sizeof(parsed)/2);
+		char **args = calloc(1, sizeof(parsed)/2 + 1);
 		int i;
-		for(i=1; i<parsed_len; i++){
-			if(i%2){
+		for(i=0; i<parsed_len; i++){
+			if(i%2 == 0){
 				args[i/2] = parsed[i];
 			}
 			else{
@@ -201,6 +199,7 @@ void eval(char **parsed) {
 				}
 			}
 		}
+		args += 1;
 		piping(parsed[0], args);
 	}
 
