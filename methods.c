@@ -40,9 +40,15 @@ void get_commandline() {
     }
     strcpy(dir, hold);
 
+    boldgreen();
     printf("TURTLE SHELL %s:%s %s$ ", strsep(&host, "."), dir, name);
+    white();
   }
-  else printf("Enter command: ");
+  else {
+    boldgreen();
+    printf("Enter command: ");
+    white();
+  }
 }
 
 // takes string, returns parsed input
