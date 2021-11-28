@@ -1,3 +1,6 @@
+// returns command line
+void get_commandline();
+
 // takes string, reads input into the string
 void input(char * c);
 

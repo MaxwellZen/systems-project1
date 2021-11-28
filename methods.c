@@ -9,7 +9,32 @@
 #include <dirent.h>
 #include <sys/types.h>
 #include <errno.h>
+#include <limits.h>
 #include "methods.h"
+
+void get_commandline() {
+  int i = 0;
+  char hostbuffer[256];
+  int hostname = gethostname(hostbuffer, sizeof(hostbuffer));
+  char * host = hostbuffer;
+
+  char cwd[PATH_MAX];
+  if (getcwd(cwd, sizeof(cwd)) != NULL) {
+    char * c = cwd;
+    char name[100];
+    char dir[100];
+
+    char * hold;
+    for (int i = 0; c != NULL; i ++) {
+      hold = strsep(&c, "/");
+      if (i == 2) strcpy(name, hold);
+    }
+    strcpy(dir, hold);
+
+    printf("TURTLE SHELL %s:%s %s$ ", strsep(&host, "."), dir, name);
+  }
+  else printf("Enter command: ");
+}
 
 // takes string, returns parsed input
 // char** split(char * c) {

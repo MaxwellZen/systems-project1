@@ -9,6 +9,7 @@
 #include <dirent.h>
 #include <sys/types.h>
 #include <errno.h>
+#include <limits.h>
 #include "methods.h"
 
 
@@ -17,7 +18,8 @@ int main() {
 	char **parsed;
 	int i = 0;
 	char c;
-	printf("Enter command: ");
+	get_commandline();
+	// printf("Enter command: ");
 	fflush(stdout);
 
 	while(1) {
@@ -35,7 +37,8 @@ int main() {
 				}
 			}
 			eval(prev);
-			printf("Enter command: ");
+			// printf("Enter command: ");
+			get_commandline();
 			fflush(stdout);
 			i = 0;
 		} else {
