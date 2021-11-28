@@ -12,9 +12,9 @@
 #include <limits.h>
 #include "methods.h"
 
-int enter_shell() {
-  char s[] = {0xF0, 0x9F, 0x90, 0xA2, '\0'};
+char s[] = {0xF0, 0x9F, 0x90, 0xA2, '\0'};
 
+int enter_shell() {
   boldgreen();
   printf("%s %s %s...Entering TURTLE SHELL... %s %s %s \n\n\n", s, s, s, s, s, s);
   return 0;
@@ -40,9 +40,15 @@ void get_commandline() {
     }
     strcpy(dir, hold);
 
-    printf("TURTLE SHELL %s:%s %s$ ", strsep(&host, "."), dir, name);
+    green();
+    printf("%s %s:%s %s$ ", s, strsep(&host, "."), dir, name);
+    white();
   }
-  else printf("Enter command: ");
+  else {
+    green();
+    printf("Enter command: ");
+    white();
+  }
 }
 
 // takes string, returns parsed input
@@ -220,6 +226,10 @@ void eval(char **parsed) {
 
 void boldgreen() {
   printf("\033[1;32m");
+}
+
+void green() {
+  printf("\033[0;32m");
 }
 
 void white() {
