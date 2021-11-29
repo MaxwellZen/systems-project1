@@ -109,29 +109,37 @@ char** split(char * c) {
 //   return args;
 // }
 
-int piping(char *cmd1, char **cmds) {
+int piping(char *cmd1, char *cmd2) {
 	FILE *in;
 	FILE *out;
     char buff[100];
 	in = popen(cmd1, "r");
-	out = popen(cmds[0], "w");
+	out = popen(cmd2, "w");
 	while(fgets(buff, sizeof(buff), in)){
 		fputs(buff, out);
 	}
-	cmds = cmds+1;
-	// while(cmds[0]){
-	// 	out = popen(cmds[0], "w");
-	// 	while(fgets(buff, sizeof(buff), in)){
-	// 		fputs(buff, out);
-	// 	}
-	// 	cmds = cmds+1;
-	// }
 
     pclose(in);
     pclose(out);
 	return 0;
 }
 
+char* parsedtostr(char **parsed) {
+	int parsed_len = 0;
+	while(parsed[parsed_len]){
+	  parsed_len++;
+	}
+	int str_len = parsed_len, i;
+	for (i = 0; i < parsed_len; i++) str_len += strlen(parsed[i]);
+
+	char *s = calloc(str_len + 1, sizeof(char)); s[0] = 0;
+	for (i = 0; i < parsed_len; i++) {
+		strcat(s, parsed[i]);
+		strcat(s, " ");
+	}
+	s[str_len] = 0;
+	return s;
+}
 
 // takes arguments, executes commands
 void eval(char **parsed) {
@@ -203,36 +211,30 @@ void eval(char **parsed) {
 		dup2(stdincopy, STDIN_FILENO);
 	}
 
-	// piping, only works with piping
-	else if(parsed_len > 2 && !strcmp(parsed[1], "|")){
-		char **args = calloc(1, sizeof(parsed)/2 + 1);
-		int i;
-		for(i=0; i<parsed_len; i++){
-			if(i%2 == 0){
-				args[i/2] = parsed[i];
-			}
-			else{
-				if(strcmp(parsed[i], "|")){
-					printf("Invalid piping syntax");
-					break;
-				}
-			}
-		}
-		args += 1;
-		piping(parsed[0], args);
-	}
-
 	// everything else??
 	else {
-		int f = fork();
-		if (!f) {
-			if (execvp(parsed[0], parsed) == -1) {
-				printf("ERROR : %s\n", strerror(errno));
+		int pipeindex = -1;
+		int i;
+		for (i = 0; i < parsed_len; i++) {
+			if (!strcmp(parsed[i], "|")) {
+				pipeindex = i;
+				break;
 			}
-			exit(0);
+		}
+		if (pipeindex > -1) {
+			parsed[pipeindex] = 0;
+			piping(parsedtostr(parsed), parsedtostr(parsed+pipeindex+1));
 		} else {
-			int status;
-			waitpid(f, &status, 0);
+			int f = fork();
+			if (!f) {
+				if (execvp(parsed[0], parsed) == -1) {
+					printf("ERROR : %s\n", strerror(errno));
+				}
+				exit(0);
+			} else {
+				int status;
+				waitpid(f, &status, 0);
+			}
 		}
 	}
 }
