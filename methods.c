@@ -147,16 +147,16 @@ void eval(char **parsed) {
 	// calculate number of args
 	int parsed_len = 0;
 	while(parsed[parsed_len]){
-	  parsed_len++;
+		parsed_len++;
 	}
 	if (parsed_len == 0) return;
 
 	// exit -- exit program
 	if(!strcmp(parsed[0], "exit")){
-    boldgreen();
-    printf("\n%s %s %s ...Exiting TURTLE SHELL... %s %s %s\n\n", s, s, s, s, s, s);
-    white();
-	  exit(0);
+		boldgreen();
+		printf("\n%s %s %s ...Exiting TURTLE SHELL... %s %s %s\n\n", s, s, s, s, s, s);
+		white();
+		exit(0);
 	}
 
 	// cd -- call chdir
@@ -241,7 +241,7 @@ void eval(char **parsed) {
 
 void INThandler(int sig) {
   signal(sig, SIG_IGN);
-	green();
+	boldgreen();
 	printf("\n\n%s %s %s ...Exiting TURTLE SHELL... %s %s %s\n\n", s, s, s, s, s, s);
 	white();
 	exit(0);
