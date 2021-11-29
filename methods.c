@@ -84,8 +84,11 @@ char** split(char * c) {
 
   char ** args = calloc(size + 1, sizeof(char *));
   args[size] = NULL;
+  count = 0;
   for (int i = 0; i < size; i ++) {
-    args[i] = strsep(&d, " ");
+    args[count] = strsep(&d, " ");
+    if (strcmp(args[count], "") == 0) count -= 1;
+    count += 1;
   }
   return args;
 }
