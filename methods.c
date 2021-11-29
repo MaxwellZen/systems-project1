@@ -52,52 +52,60 @@ void get_commandline() {
 }
 
 // takes string, returns parsed input
-// char** split(char * c) {
-//   int i = 0;
-//   int size = 1;
-// 	char * d;
-// 	int count = 0;
-
-//   while (c[i] != '\0') {
-//     if (c[i] == ' ') size += 1;
-// 		else if (c[i] == ';') size += 2;
-
-// 		if (c[i] == ';') {
-// 			d[count] = ' ';
-// 			d[count + 1] = ';';
-// 			d[count + 2] = ' ';
-// 			count += 3;
-// 		}
-// 		else {
-// 			d[count] = c[i];
-// 			count += 1;
-// 		}
-//     i += 1;
-//   }
-
-//   char ** args = calloc(size, sizeof(char *));
-//   for (int i = 0; i < size; i ++) {
-//     args[i] = strsep(&d, " ");
-//   }
-//   return args;
-// }
-
 char** split(char * c) {
   int i = 0;
-  int size = 1;
+  int dlen = 0;
 
-  while (c[i] != '\0') {
-    if (c[i] == ' ') size += 1;
-    i += 1;
+  for (int i = 0; c[i]; i ++) {
+    if (c[i] == ';') dlen += 2;
   }
 
-  char ** args = calloc(size+1, sizeof(char *));
+	char * d = calloc(strlen(c) + dlen, sizeof(char *));
+  i = 0;
+  int size = 1;
+	int count = 0;
+
+  for (int i = 0; c[i]; i ++) {
+    if (c[i] == ' ') size += 1;
+		else if (c[i] == ';') size += 2;
+
+		if (c[i] == ';') {
+			d[count] = ' ';
+			d[count + 1] = ';';
+			d[count + 2] = ' ';
+			count += 3;
+		}
+		else {
+			d[count] = c[i];
+			count += 1;
+		}
+  }
+  d[count] = '\0';
+
+  char ** args = calloc(size + 1, sizeof(char *));
+  args[size] = NULL;
   for (int i = 0; i < size; i ++) {
-    args[i] = strsep(&c, " ");
-    // printf("%s\n", args[i]);
+    args[i] = strsep(&d, " ");
   }
   return args;
 }
+
+// char** split(char * c) {
+//   int i = 0;
+//   int size = 1;
+//
+//   while (c[i] != '\0') {
+//     if (c[i] == ' ') size += 1;
+//     i += 1;
+//   }
+//
+//   char ** args = calloc(size+1, sizeof(char *));
+//   for (int i = 0; i < size; i ++) {
+//     args[i] = strsep(&c, " ");
+//     // printf("%s\n", args[i]);
+//   }
+//   return args;
+// }
 
 int piping(char *cmd1, char **cmds) {
 	FILE *in;
