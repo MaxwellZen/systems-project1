@@ -16,6 +16,8 @@
 char s[] = {0xF0, 0x9F, 0x90, 0xA2, '\0'};
 char starttext[] = "  _____   _   _    ___    _____    _       ___\n |_   _| | | | |  | _ \\  |_   _|  | |     | __|\n   | |   | |_| |  |   /    | |    | |__   | _|\n  _|_|_   \\___/   |_|_\\   _|_|_   |____|  |___|\n_|\"\"\"\"\"|_|\"\"\"\"\"|_|\"\"\"\"\"|_|\"\"\"\"\"|_|\"\"\"\"\"|_|\"\"\"\"\"|\n\"`-0-0-'\"`-0-0-'\"`-0-0-'\"`-0-0-'\"`-0-0-'\"`-0-0-'\n";
 int f;
+extern int h;
+extern char **history;
 
 void enter_shell() {
   boldgreen();
@@ -165,13 +167,20 @@ void eval(char **parsed) {
 
 	// cd -- call chdir
 	else if(!strcmp(parsed[0], "cd")){
-	  if(parsed_len != 2)
-		printf("Please follow the format: cd <path>\n");
-	  else{
-		int n = chdir(parsed[1]);
-		if(n)
-		  printf("cd failed: %s\n", strerror(errno));
-	  }
+		if(parsed_len != 2)
+			printf("Please follow the format: cd <path>\n");
+		else{
+			int n = chdir(parsed[1]);
+			if(n)
+				printf("cd failed: %s\n", strerror(errno));
+		}
+	}
+
+	else if(!strcmp(parsed[0], "hist")){
+		int i;
+		for(i=0; i<h; i++){
+			printf("%d\t%s\n", i, history[i]);
+		}
 	}
 
 	// redirection

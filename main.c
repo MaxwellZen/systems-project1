@@ -13,12 +13,16 @@
 #include <signal.h>
 #include "methods.h"
 void INThandler(int);
+char **history;
+int h;
 
 int main() {
 	char line[1000];
 	char **parsed;
 	int i = 0;
 	char c;
+	history = calloc(500, sizeof(char*));
+	h = 0;
 
 	enter_shell();
 	white();
@@ -30,8 +34,11 @@ int main() {
 	while(1) {
 		c = getchar();
 		if (c =='\n') {
+			history[h] = calloc(1, sizeof(line));
+			strcpy(history[h], line);
+			h++;
 			// split input -- take line and create string array, splitting by space
-	    parsed = split(line);
+	    	parsed = split(line);
 
 			char **cur, **prev;
 			for (cur = prev = parsed; *cur; cur++) {
