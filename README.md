@@ -12,7 +12,7 @@ Our project is a shell written in C.
 - `hist`: Displays the history of commands run, up to 500
 ## Features attempted
 - Parses command line inputs
-- Supports any spacing bewteen `;` and `|`
+- Supports any spacing between `;` and `|`
 - Supports multipiping
 ## Bugs/Notes
 
