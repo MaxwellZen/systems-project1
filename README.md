@@ -10,10 +10,11 @@ Our project is a shell written in C.
 - `<`: Redirects stdin from a file (appending)
 - `|`: Redirects stdout from one program to stdin of the next (piping)
 - `hist`: Displays the history of commands run, up to 500
-## Features attempted
-- Parses command line inputs
 - Supports any spacing between `;` and `|`
 - Supports multipiping
+
+## Features attempted
+
 ## Bugs/Notes
 
 ## Functions
