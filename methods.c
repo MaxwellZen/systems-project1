@@ -62,7 +62,7 @@ char** split(char * c) {
   int dlen = 0;
 
   for (int i = 0; c[i]; i ++) {
-    if (c[i] == ';') dlen += 2;
+    if (c[i] == ';' || c[i] == '|') dlen += 2;
   }
 
 	char * d = calloc(strlen(c) + dlen, sizeof(char *));
@@ -72,11 +72,11 @@ char** split(char * c) {
 
   for (int i = 0; c[i]; i ++) {
     if (c[i] == ' ') size += 1;
-		else if (c[i] == ';') size += 2;
+		else if (c[i] == ';' || c[i] == '|') size += 2;
 
-		if (c[i] == ';') {
+		if (c[i] == ';' || c[i] == '|') {
 			d[count] = ' ';
-			d[count + 1] = ';';
+			d[count + 1] = c[i];
 			d[count + 2] = ' ';
 			count += 3;
 		}
