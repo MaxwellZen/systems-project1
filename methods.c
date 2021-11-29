@@ -10,13 +10,17 @@
 #include <sys/types.h>
 #include <errno.h>
 #include <limits.h>
+#include <signal.h>
 #include "methods.h"
 
 char s[] = {0xF0, 0x9F, 0x90, 0xA2, '\0'};
+char starttext[] = "  _____   _   _    ___    _____    _       ___\n |_   _| | | | |  | _ \\  |_   _|  | |     | __|\n   | |   | |_| |  |   /    | |    | |__   | _|\n  _|_|_   \\___/   |_|_\\   _|_|_   |____|  |___|\n_|\"\"\"\"\"|_|\"\"\"\"\"|_|\"\"\"\"\"|_|\"\"\"\"\"|_|\"\"\"\"\"|_|\"\"\"\"\"|\n\"`-0-0-'\"`-0-0-'\"`-0-0-'\"`-0-0-'\"`-0-0-'\"`-0-0-'\n";
+int f;
 
 void enter_shell() {
   boldgreen();
-  printf("%s %s %s ...Entering TURTLE SHELL... %s %s %s\n\n\n", s, s, s, s, s, s);
+  printf("%s %s %s ...Entering TURTLE SHELL... %s %s %s\n", s, s, s, s, s, s);
+  printf("%s\n\n", starttext);
   white();
 }
 
@@ -225,7 +229,7 @@ void eval(char **parsed) {
 			parsed[pipeindex] = 0;
 			piping(parsedtostr(parsed), parsedtostr(parsed+pipeindex+1));
 		} else {
-			int f = fork();
+			f = fork();
 			if (!f) {
 				if (execvp(parsed[0], parsed) == -1) {
 					printf("ERROR : %s\n", strerror(errno));
@@ -234,17 +238,22 @@ void eval(char **parsed) {
 			} else {
 				int status;
 				waitpid(f, &status, 0);
+				f = 0;
 			}
 		}
 	}
 }
 
 void INThandler(int sig) {
-  signal(sig, SIG_IGN);
-	boldgreen();
-	printf("\n\n%s %s %s ...Exiting TURTLE SHELL... %s %s %s\n\n", s, s, s, s, s, s);
-	white();
-	exit(0);
+	if (f) {
+		kill(f, SIGINT);
+		f = 0;
+	} else {
+		boldgreen();
+		printf("\n\n%s %s %s ...Exiting TURTLE SHELL... %s %s %s\n\n", s, s, s, s, s, s);
+		white();
+		exit(0);
+	}
 }
 
 void boldgreen() {
