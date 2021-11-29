@@ -11,22 +11,24 @@
 #include <errno.h>
 #include <limits.h>
 #include "methods.h"
+void INThandler(int);
 
 int main() {
 	char line[1000];
 	char **parsed;
 	int i = 0;
 	char c;
-	
+
 	enter_shell();
 	white();
 
 	get_commandline();
 	fflush(stdout);
 
+	signal(SIGINT, INThandler);
 	while(1) {
 		c = getchar();
-		if (c=='\n') {
+		if (c =='\n') {
 			// split input -- take line and create string array, splitting by space
 	    parsed = split(line);
 

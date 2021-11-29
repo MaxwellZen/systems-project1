@@ -14,10 +14,9 @@
 
 char s[] = {0xF0, 0x9F, 0x90, 0xA2, '\0'};
 
-int enter_shell() {
+void enter_shell() {
   boldgreen();
-  printf("%s %s %s...Entering TURTLE SHELL... %s %s %s \n\n\n", s, s, s, s, s, s);
-  return 0;
+  printf("%s %s %s ...Entering TURTLE SHELL... %s %s %s\n\n\n", s, s, s, s, s, s);
   white();
 }
 
@@ -146,6 +145,9 @@ void eval(char **parsed) {
 
 	// exit -- exit program
 	if(!strcmp(parsed[0], "exit")){
+    boldgreen();
+    printf("\n%s %s %s ...Exiting TURTLE SHELL... %s %s %s\n\n", s, s, s, s, s, s);
+    white();
 	  exit(0);
 	}
 
@@ -233,6 +235,14 @@ void eval(char **parsed) {
 			waitpid(f, &status, 0);
 		}
 	}
+}
+
+void INThandler(int sig) {
+  signal(sig, SIG_IGN);
+	green();
+	printf("\n\n%s %s %s ...Exiting TURTLE SHELL... %s %s %s\n\n", s, s, s, s, s, s);
+	white();
+	exit(0);
 }
 
 void boldgreen() {

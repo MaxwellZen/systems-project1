@@ -1,5 +1,5 @@
 // entering shell
-int enter_shell();
+void enter_shell();
 
 // returns command line
 void get_commandline();
@@ -12,6 +12,9 @@ char** split(char * c);
 
 // takes arguments, executes commands
 void eval(char **parsed);
+
+// prints exit shell statement
+void INThandler(int sig);
 
 // terminal colors
 void boldgreen();
