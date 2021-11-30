@@ -35,8 +35,8 @@ int main() {
 	while(1) {
 		c = getchar();
 		if (c =='\n') {
-			history[h] = calloc(1, strlen(line)+1);
-			strcpy(history[h], line);
+			history[h%500] = calloc(1, strlen(line)+1);
+			strcpy(history[h%500], line);
 			h++;
 			// split input -- take line and create string array, splitting by space
 	    	parsed = split(line);

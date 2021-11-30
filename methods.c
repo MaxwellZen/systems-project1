@@ -166,9 +166,11 @@ void eval(char **parsed) {
 	}
 
 	else if(!strcmp(parsed[0], "hist")){
-		int i;
-		for(i=0; i<h; i++){
-			printf("%d\t%s\n", i, history[i]);
+		int i, lower;
+		if (h<500) lower = 0;
+		else lower = h - 500;
+		for(i=lower; i<h; i++){
+			printf("%d\t%s\n", i, history[i%500]);
 		}
 	}
 
