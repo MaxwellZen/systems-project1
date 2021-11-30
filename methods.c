@@ -19,6 +19,7 @@ char shelltext[] = "       ___    _  _     ___     _       _     \n      / __|  
 extern int f, ischild;
 extern int h;
 extern char **history;
+extern char *homedir;
 
 void enter_shell() {
 	boldgreen();
@@ -104,6 +105,7 @@ char** split(char * c) {
 	return args;
 }
 
+// takes two strings of commands to run, pipes one into the other
 int piping(char *cmd1, char *cmd2) {
 	FILE *in;
 	FILE *out;
@@ -119,18 +121,28 @@ int piping(char *cmd1, char *cmd2) {
 	return 0;
 }
 
+// takes parsed input, recreates space-separated string
 char* parsedtostr(char **parsed) {
 	int parsed_len = 0;
 	while(parsed[parsed_len]){
 		parsed_len++;
 	}
 	int str_len = parsed_len, i;
-	for (i = 0; i < parsed_len; i++) str_len += strlen(parsed[i]);
+	for (i = 0; i < parsed_len; i++) {
+		str_len += strlen(parsed[i]);
+		if (strchr(parsed[i], ' ')) str_len += 2;
+	}
 
 	char *s = calloc(str_len + 1, sizeof(char)); s[0] = 0;
 	for (i = 0; i < parsed_len; i++) {
-		strcat(s, parsed[i]);
-		strcat(s, " ");
+		if (strchr(parsed[i], ' ')) {
+			strcat(s, "\"");
+			strcat(s, parsed[i]);
+			strcat(s, "\" ");
+		} else {
+			strcat(s, parsed[i]);
+			strcat(s, " ");
+		}
 	}
 	s[str_len] = 0;
 	return s;
@@ -158,10 +170,16 @@ void eval(char **parsed) {
 	else if(!strcmp(parsed[0], "cd")){
 		if(parsed_len != 2)
 			printf("Please follow the format: cd <path>\n");
-		else{
-			int n = chdir(parsed[1]);
-			if(n)
-				printf("cd failed: %s\n", strerror(errno));
+		else {
+			char *s = calloc(1, strlen(homedir) + strlen(parsed[1]));
+			if (parsed[1][0]=='~') {
+				strcat(s, homedir);
+				parsed[1]++;
+			}
+			strcat(s, parsed[1]);
+			int n = chdir(s);
+			if (n)
+				printf("ERROR: %s\n", strerror(errno));
 		}
 	}
 
@@ -228,6 +246,7 @@ void eval(char **parsed) {
 				break;
 			}
 		}
+		// use piping
 		if (pipeindex > -1) {
 			parsed[pipeindex] = 0;
 			f = fork();
@@ -240,7 +259,9 @@ void eval(char **parsed) {
 				waitpid(f, &status, 0);
 				f = 0;
 			}
-		} else {
+		}
+		// use execvp
+		else {
 			f = fork();
 			if (!f) {
 				ischild = 1;
@@ -257,6 +278,7 @@ void eval(char **parsed) {
 	}
 }
 
+// handle ctrl+c
 void INThandler(int sig) {
 	if (f) {
 		kill(f, SIGINT);
@@ -269,6 +291,7 @@ void INThandler(int sig) {
 	}
 }
 
+// print colors
 void boldgreen() {
   printf("\033[1;32m");
 }

@@ -12,15 +12,18 @@
 #include <limits.h>
 #include <signal.h>
 #include "methods.h"
-void INThandler(int);
+
 char **history;
 int h;
 int f, ischild;
+char *homedir;
 
 int main() {
+	homedir = getenv("HOME");
+	printf("%s\n", homedir);
 	char line[1000];
 	char **parsed;
-	int i = 0;
+	// int i = 0;
 	char c;
 	history = calloc(500, sizeof(char*));
 	h = 0;
@@ -32,32 +35,26 @@ int main() {
 	fflush(stdout);
 
 	signal(SIGINT, INThandler);
-	while(1) {
-		c = getchar();
-		if (c =='\n') {
-			history[h%500] = calloc(1, strlen(line)+1);
-			strcpy(history[h%500], line);
-			h++;
-			// split input -- take line and create string array, splitting by space
-	    	parsed = split(line);
+	while(fgets(line, 1000, stdin)) {
+		*strchr(line, '\n') = 0;
+		if (h >= 500) free(history[h%500]);
+		history[h%500] = calloc(1, strlen(line)+1);
+		strcpy(history[h%500], line);
+		h++;
+		// split input -- take line and create string array, splitting by space
+    	parsed = split(line);
 
-			char **cur, **prev;
-			for (cur = prev = parsed; *cur; cur++) {
-				if (strcmp(*cur, ";")==0) {
-					*cur = 0;
-					eval(prev);
-					prev = cur+1;
-				}
+		char **cur, **prev;
+		for (cur = prev = parsed; *cur; cur++) {
+			if (strcmp(*cur, ";")==0) {
+				*cur = 0;
+				eval(prev);
+				prev = cur+1;
 			}
-			eval(prev);
-			get_commandline();
-			fflush(stdout);
-			i = 0;
-		} else {
-			line[i++]=c;
-			line[i]=0;
 		}
-
+		eval(prev);
+		get_commandline();
+		fflush(stdout);
 	}
 
 	return 0;
