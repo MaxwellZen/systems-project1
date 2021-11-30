@@ -14,7 +14,8 @@
 #include "methods.h"
 
 char s[] = {0xF0, 0x9F, 0x90, 0xA2, '\0'};
-char starttext[] = "  _____   _   _    ___    _____    _       ___\n |_   _| | | | |  | _ \\  |_   _|  | |     | __|\n   | |   | |_| |  |   /    | |    | |__   | _|\n  _|_|_   \\___/   |_|_\\   _|_|_   |____|  |___|\n_|\"\"\"\"\"|_|\"\"\"\"\"|_|\"\"\"\"\"|_|\"\"\"\"\"|_|\"\"\"\"\"|_|\"\"\"\"\"|\n\"`-0-0-'\"`-0-0-'\"`-0-0-'\"`-0-0-'\"`-0-0-'\"`-0-0-'\n";
+char turtletext[] = "  _____   _   _    ___    _____    _       ___\n |_   _| | | | |  | _ \\  |_   _|  | |     | __|\n   | |   | |_| |  |   /    | |    | |__   | _|\n  _|_|_   \\___/   |_|_\\   _|_|_   |____|  |___|\n\033[1;91m_|\"\"\"\"\"|_|\"\"\"\"\"|_|\"\"\"\"\"|_|\"\"\"\"\"|_|\"\"\"\"\"|_|\"\"\"\"\"|\n\"`-\033[0m0\033[1;91m-\033[0m0\033[1;91m-'\"`-\033[0m0\033[1;91m-\033[0m0\033[1;91m-'\"`-\033[0m0\033[1;91m-\033[0m0\033[1;91m-'\"`-\033[0m0\033[1;91m-\033[0m0\033[1;91m-'\"`-\033[0m0\033[1;91m-\033[0m0\033[1;91m-'\"`-\033[0m0\033[1;91m-\033[0m0\033[1;91m-' ";
+char shelltext[] = "       ___    _  _     ___     _       _     \n      / __|  | || |   | __|   | |     | |    \n      \\__ \\  | __ |   | _|    | |__   | |__  \n      |___/  |_||_|   |___|   |____|  |____| \n\033[1;91m    _|\"\"\"\"\"|_|\"\"\"\"\"|_|\"\"\"\"\"|_|\"\"\"\"\"|_|\"\"\"\"\"| \n    \"`-\033[0m0\033[1;91m-\033[0m0\033[1;91m-'\"`-\033[0m0\033[1;91m-\033[0m0\033[1;91m-'\"`-\033[0m0\033[1;91m-\033[0m0\033[1;91m-'\"`-\033[0m0\033[1;91m-\033[0m0\033[1;91m-'\"`-\033[0m0\033[1;91m-\033[0m0\033[1;91m-' ";
 int f;
 extern int h;
 extern char **history;
@@ -22,7 +23,9 @@ extern char **history;
 void enter_shell() {
   boldgreen();
   printf("%s %s %s ...Entering TURTLE SHELL... %s %s %s\n", s, s, s, s, s, s);
-  printf("%s\n\n", starttext);
+  printf("%s\n", turtletext);
+  boldgreen();
+  printf("%s\n\n\n", shelltext);
   white();
 }
 
@@ -98,27 +101,10 @@ char** split(char * c) {
   return args;
 }
 
-// char** split(char * c) {
-//   int i = 0;
-//   int size = 1;
-//
-//   while (c[i] != '\0') {
-//     if (c[i] == ' ') size += 1;
-//     i += 1;
-//   }
-//
-//   char ** args = calloc(size+1, sizeof(char *));
-//   for (int i = 0; i < size; i ++) {
-//     args[i] = strsep(&c, " ");
-//     // printf("%s\n", args[i]);
-//   }
-//   return args;
-// }
-
 int piping(char *cmd1, char *cmd2) {
 	FILE *in;
 	FILE *out;
-    char buff[100];
+    char buff[1000];
 	in = popen(cmd1, "r");
 	out = popen(cmd2, "w");
 	while(fgets(buff, sizeof(buff), in)){
@@ -196,6 +182,7 @@ void eval(char **parsed) {
 		parsed[parsed_len-2]=0;
 		eval(parsed);
 		dup2(stdoutcopy, STDOUT_FILENO);
+		close(fd); close(stdoutcopy);
 	}
 	// >>
 	else if (parsed_len>1 && strcmp(parsed[parsed_len-2], ">>")==0) {
@@ -209,6 +196,7 @@ void eval(char **parsed) {
 		parsed[parsed_len-2]=0;
 		eval(parsed);
 		dup2(stdoutcopy, STDOUT_FILENO);
+		close(fd); close(stdoutcopy);
 	}
 	// <
 	else if (parsed_len>1 && strcmp(parsed[parsed_len-2], "<")==0) {
@@ -222,6 +210,7 @@ void eval(char **parsed) {
 		parsed[parsed_len-2]=0;
 		eval(parsed);
 		dup2(stdincopy, STDIN_FILENO);
+		close(fd); close(stdincopy);
 	}
 
 	// everything else??
@@ -236,7 +225,15 @@ void eval(char **parsed) {
 		}
 		if (pipeindex > -1) {
 			parsed[pipeindex] = 0;
-			piping(parsedtostr(parsed), parsedtostr(parsed+pipeindex+1));
+			f = fork();
+			if (!f) {
+				piping(parsedtostr(parsed), parsedtostr(parsed+pipeindex+1));
+				exit(0);
+			} else {
+				int status;
+				waitpid(f, &status, 0);
+				f = 0;
+			}
 		} else {
 			f = fork();
 			if (!f) {
