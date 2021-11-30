@@ -16,65 +16,64 @@
 char s[] = {0xF0, 0x9F, 0x90, 0xA2, '\0'};
 char turtletext[] = "  _____   _   _    ___    _____    _       ___\n |_   _| | | | |  | _ \\  |_   _|  | |     | __|\n   | |   | |_| |  |   /    | |    | |__   | _|\n  _|_|_   \\___/   |_|_\\   _|_|_   |____|  |___|\n\033[1;91m_|\"\"\"\"\"|_|\"\"\"\"\"|_|\"\"\"\"\"|_|\"\"\"\"\"|_|\"\"\"\"\"|_|\"\"\"\"\"|\n\"`-\033[0m0\033[1;91m-\033[0m0\033[1;91m-'\"`-\033[0m0\033[1;91m-\033[0m0\033[1;91m-'\"`-\033[0m0\033[1;91m-\033[0m0\033[1;91m-'\"`-\033[0m0\033[1;91m-\033[0m0\033[1;91m-'\"`-\033[0m0\033[1;91m-\033[0m0\033[1;91m-'\"`-\033[0m0\033[1;91m-\033[0m0\033[1;91m-' ";
 char shelltext[] = "       ___    _  _     ___     _       _     \n      / __|  | || |   | __|   | |     | |    \n      \\__ \\  | __ |   | _|    | |__   | |__  \n      |___/  |_||_|   |___|   |____|  |____| \n\033[1;91m    _|\"\"\"\"\"|_|\"\"\"\"\"|_|\"\"\"\"\"|_|\"\"\"\"\"|_|\"\"\"\"\"| \n    \"`-\033[0m0\033[1;91m-\033[0m0\033[1;91m-'\"`-\033[0m0\033[1;91m-\033[0m0\033[1;91m-'\"`-\033[0m0\033[1;91m-\033[0m0\033[1;91m-'\"`-\033[0m0\033[1;91m-\033[0m0\033[1;91m-'\"`-\033[0m0\033[1;91m-\033[0m0\033[1;91m-' ";
-int f;
+extern int f, ischild;
 extern int h;
 extern char **history;
 
 void enter_shell() {
-  boldgreen();
-  printf("%s %s %s ...Entering TURTLE SHELL... %s %s %s\n", s, s, s, s, s, s);
-  printf("%s\n", turtletext);
-  boldgreen();
-  printf("%s\n\n\n", shelltext);
-  white();
+	boldgreen();
+	printf("%s %s %s ...Entering TURTLE SHELL... %s %s %s\n", s, s, s, s, s, s);
+	printf("%s\n", turtletext);
+	boldgreen();
+	printf("%s\n\n\n", shelltext);
+	white();
 }
 
 void get_commandline() {
-  int i = 0;
-  char hostbuffer[256];
-  int hostname = gethostname(hostbuffer, sizeof(hostbuffer));
-  char * host = hostbuffer;
+	int i = 0;
+	char hostbuffer[256];
+	int hostname = gethostname(hostbuffer, sizeof(hostbuffer));
+	char * host = hostbuffer;
 
-  char cwd[PATH_MAX];
-  if (getcwd(cwd, sizeof(cwd)) != NULL) {
-    char * c = cwd;
-    char name[100];
-    char dir[100];
+	char cwd[PATH_MAX];
+	if (getcwd(cwd, sizeof(cwd)) != NULL) {
+		char * c = cwd;
+		char name[100];
+		char dir[100];
 
-    char * hold;
-    for (int i = 0; c != NULL; i ++) {
-      hold = strsep(&c, "/");
-      if (i == 2) strcpy(name, hold);
-    }
-    strcpy(dir, hold);
+		char * hold;
+		for (int i = 0; c != NULL; i ++) {
+			hold = strsep(&c, "/");
+			if (i == 2) strcpy(name, hold);
+		}
+		strcpy(dir, hold);
 
-    green();
-    printf("%s %s:%s %s$ ", s, strsep(&host, "."), dir, name);
-    white();
-  }
-  else {
-    green();
-    printf("Enter command: ");
-    white();
-  }
+		green();
+		printf("%s %s:%s %s$ ", s, strsep(&host, "."), dir, name);
+		white();
+	} else {
+		green();
+		printf("Enter command: ");
+		white();
+	}
 }
 
 // takes string, returns parsed input
 char** split(char * c) {
-  int i = 0;
-  int dlen = 0;
+	int i = 0;
+	int dlen = 0;
 
-  for (int i = 0; c[i]; i ++) {
-    if (c[i] == ';' || c[i] == '|') dlen += 2;
-  }
+	for (int i = 0; c[i]; i ++) {
+		if (c[i] == ';' || c[i] == '|') dlen += 2;
+	}
 
 	char * d = calloc(strlen(c) + dlen, sizeof(char *));
-  i = 0;
-  int size = 1;
+	i = 0;
+	int size = 1;
 	int count = 0;
 
-  for (int i = 0; c[i]; i ++) {
-    if (c[i] == ' ') size += 1;
+	for (int i = 0; c[i]; i ++) {
+		if (c[i] == ' ') size += 1;
 		else if (c[i] == ';' || c[i] == '|') size += 2;
 
 		if (c[i] == ';' || c[i] == '|') {
@@ -82,23 +81,27 @@ char** split(char * c) {
 			d[count + 1] = c[i];
 			d[count + 2] = ' ';
 			count += 3;
-		}
-		else {
+		} else {
 			d[count] = c[i];
 			count += 1;
 		}
-  }
-  d[count] = '\0';
+	}
+	d[count] = '\0';
 
-  char ** args = calloc(size + 1, sizeof(char *));
-  args[size] = NULL;
-  count = 0;
-  for (int i = 0; i < size; i ++) {
-    args[count] = strsep(&d, " ");
-    if (strcmp(args[count], "") == 0) count -= 1;
-    count += 1;
-  }
-  return args;
+	char ** args = calloc(size + 1, sizeof(char *));
+	count = 0;
+	while (d) {
+		if (*d == '\"') {
+			d++;
+			args[count] = strsep(&d, "\"");
+		} else {
+			args[count] = strsep(&d, " ");
+		}
+		if (strcmp(args[count], "") == 0) count -= 1;
+		count += 1;
+	}
+	args[count] = 0;
+	return args;
 }
 
 int piping(char *cmd1, char *cmd2) {
@@ -119,7 +122,7 @@ int piping(char *cmd1, char *cmd2) {
 char* parsedtostr(char **parsed) {
 	int parsed_len = 0;
 	while(parsed[parsed_len]){
-	  parsed_len++;
+		parsed_len++;
 	}
 	int str_len = parsed_len, i;
 	for (i = 0; i < parsed_len; i++) str_len += strlen(parsed[i]);
@@ -227,6 +230,7 @@ void eval(char **parsed) {
 			parsed[pipeindex] = 0;
 			f = fork();
 			if (!f) {
+				ischild = 1;
 				piping(parsedtostr(parsed), parsedtostr(parsed+pipeindex+1));
 				exit(0);
 			} else {
@@ -237,6 +241,7 @@ void eval(char **parsed) {
 		} else {
 			f = fork();
 			if (!f) {
+				ischild = 1;
 				if (execvp(parsed[0], parsed) == -1) {
 					printf("ERROR : %s\n", strerror(errno));
 				}
@@ -254,7 +259,7 @@ void INThandler(int sig) {
 	if (f) {
 		kill(f, SIGINT);
 		f = 0;
-	} else {
+	} else if (! ischild) {
 		boldgreen();
 		printf("\n\n%s %s %s ...Exiting TURTLE SHELL... %s %s %s\n\n", s, s, s, s, s, s);
 		white();

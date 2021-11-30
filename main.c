@@ -15,6 +15,7 @@
 void INThandler(int);
 char **history;
 int h;
+int f, ischild;
 
 int main() {
 	char line[1000];
