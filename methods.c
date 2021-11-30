@@ -172,6 +172,7 @@ void eval(char **parsed) {
 			printf("Please follow the format: cd <path>\n");
 		else {
 			char *s = calloc(1, strlen(homedir) + strlen(parsed[1]));
+			s[0] = 0;
 			if (parsed[1][0]=='~') {
 				strcat(s, homedir);
 				parsed[1]++;
