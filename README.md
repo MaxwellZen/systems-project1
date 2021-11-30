@@ -3,21 +3,26 @@
 Our project is a shell written in C.
 ## Features implemented
 - `exit`: Exits the shell
-- `cd`: Changes directories
+- `cd`: Changes directories (including `~`)
 - `<`: Redirects stdout to a file (overwriting)
 - `<<`: Redirects stdout to a file (appending)
 - `<`: Redirects stdin from a file
 - `|`: Redirects stdout from one program to stdin of the next (piping)
-- `hist`: Displays the history of commands run, up to 500
-- Supports multiple spaces between arguments, and any spacing between `;` and `|`, ex `ls   -a -l|  wc >  test;  cat   test`
-- Allows quotes, ex `git commit -m "commit message"`
-- Supports piping
-- Signal handling: `ctrl+c` ends current commands
+- Redirection and piping multiple times, combined
+- `hist`: Displays the history of the last 500 commands
+- Supports multiple spaces between arguments, and any spacing between `;` and `|`
+- Allows quotes to surround text with spaces, ex `git commit -m "commit message"`
+- Signal handling: `ctrl+c` ends current command, or exits shell if no command is being run
 
 ## Features attempted
-- Multipiping was attempted manually but entered an infinite loop - it currently works, but only because popen takes care of it automatically
+- Multipiping was attempted manually but never worked - it currently only works because popen takes care of everything past the first pipe automatically
 
 ## Bugs/Notes
+- There have been issues with backspace in the past - they might still persist
+- Only commands of up to 1000 characters can be processed - something that could be fixed in the future, but hopefully isn't a problem
+- Semicolons and pipes don't need to be separated by spaces, but redirection symbols do
+- If stdout is redirected multiple times, it'll use the leftmost source given, as opposed to bash which uses the rightmost source given
+- On that note, order of operations in general might be thrown off by the fact that redirection operators are processed from right to left
 
 ## Functions
 ```
