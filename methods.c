@@ -21,6 +21,7 @@ extern int h;
 extern char **history;
 extern char *homedir;
 
+// prints text upon entering shell
 void enter_shell() {
 	boldgreen();
 	printf("%s %s %s ...Entering TURTLE SHELL... %s %s %s\n", s, s, s, s, s, s);
@@ -30,6 +31,7 @@ void enter_shell() {
 	white();
 }
 
+// prints command line prompt
 void get_commandline() {
 	int i = 0;
 	char hostbuffer[256];
@@ -57,6 +59,13 @@ void get_commandline() {
 		printf("Enter command: ");
 		white();
 	}
+}
+
+// prints text upon exiting shell
+void print_exit_message() {
+	boldgreen();
+	printf("\n%s %s %s ...Exiting TURTLE SHELL... %s %s %s\n\n", s, s, s, s, s, s);
+	white();
 }
 
 // takes string, returns parsed input
@@ -160,9 +169,7 @@ void eval(char **parsed) {
 
 	// exit -- exit program
 	if(!strcmp(parsed[0], "exit")){
-		boldgreen();
-		printf("\n%s %s %s ...Exiting TURTLE SHELL... %s %s %s\n\n", s, s, s, s, s, s);
-		white();
+		print_exit_message();
 		exit(0);
 	}
 
@@ -285,22 +292,18 @@ void INThandler(int sig) {
 		kill(f, SIGINT);
 		f = 0;
 	} else if (! ischild) {
-		boldgreen();
-		printf("\n\n%s %s %s ...Exiting TURTLE SHELL... %s %s %s\n\n", s, s, s, s, s, s);
-		white();
+		print_exit_message();
 		exit(0);
 	}
 }
 
-// print colors
+// terminal colors
 void boldgreen() {
   printf("\033[1;32m");
 }
-
 void green() {
   printf("\033[0;32m");
 }
-
 void white() {
   printf("\033[0m");
 }

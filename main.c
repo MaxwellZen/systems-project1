@@ -23,7 +23,6 @@ int main() {
 	printf("%s\n", homedir);
 	char line[1000];
 	char **parsed;
-	// int i = 0;
 	char c;
 	history = calloc(500, sizeof(char*));
 	h = 0;
@@ -36,14 +35,20 @@ int main() {
 
 	signal(SIGINT, INThandler);
 	while(fgets(line, 1000, stdin)) {
+
+		// remove trailing newline
 		*strchr(line, '\n') = 0;
+
+		// update history
 		if (h >= 500) free(history[h%500]);
 		history[h%500] = calloc(1, strlen(line)+1);
 		strcpy(history[h%500], line);
 		h++;
-		// split input -- take line and create string array, splitting by space
+
+		// split input
     	parsed = split(line);
 
+		// run commands in between semicolons
 		char **cur, **prev;
 		for (cur = prev = parsed; *cur; cur++) {
 			if (strcmp(*cur, ";")==0) {
@@ -53,9 +58,13 @@ int main() {
 			}
 		}
 		eval(prev);
+
+		// print command line prompt
 		get_commandline();
 		fflush(stdout);
 	}
+
+	print_exit_message();
 
 	return 0;
 }

@@ -29,14 +29,14 @@ Our project is a shell written in C.
 // main method
 int main();
 
-// entering shell
+// prints text upon entering shell
 void enter_shell();
 
-// returns command line
+// prints command line prompt
 void get_commandline();
 
-// takes string, reads input into the string
-void input(char * c);
+// prints text upon exiting shell
+void print_exit_message();
 
 // takes string, returns parsed input
 char** split(char * c);
@@ -50,10 +50,10 @@ char* parsedtostr(char **parsed);
 // takes arguments, executes commands
 void eval(char **parsed);
 
-// prints exit shell statement
+// handle ctrl+c
 void INThandler(int sig);
 
-// switches colors
+// terminal colors
 void boldgreen();
 void green();
 void white();
